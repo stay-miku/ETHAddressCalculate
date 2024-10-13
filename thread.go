@@ -37,7 +37,7 @@ func calculate(regs []*regexp.Regexp) {
 
 func thread(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
-	i := 0
+	var i uint64 = 0
 	regs := getReg()
 	for {
 		select {
