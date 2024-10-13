@@ -10,6 +10,8 @@ type config struct {
 	RunTime int      `yaml:"run_times"`
 	Reg     []string `yaml:"reg"`
 	Output  string   `yaml:"output"`
+	Type    string   `yaml:"type"`
+	Length  int      `yaml:"len"`
 }
 
 var Config config

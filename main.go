@@ -11,7 +11,17 @@ import (
 )
 
 func main() {
-	log.Println("Start with thread number: ", Config.Thread, " run time: ", Config.RunTime, "s", " output: ", Config.Output, " reg: ", Config.Reg)
+	log.Println("Start")
+	log.Println("Thread number: ", Config.Thread)
+	log.Println("Run time: ", Config.RunTime)
+	log.Println("Output file: ", Config.Output)
+	log.Println("Type: ", Config.Type)
+	log.Println("Length: ", Config.Length)
+	log.Println("Reg:")
+	for _, r := range Config.Reg {
+		log.Println(r)
+	}
+	log.Println("----------------------")
 	err := initOutput()
 	if err != nil {
 		panic(err)
@@ -30,15 +40,17 @@ func main() {
 
 	var wg sync.WaitGroup
 	for i := 0; i < Config.Thread; i++ {
-		go thread(ctx, &wg, i)
+		if Config.Type == "private key" {
+			go threadWithKey(ctx, &wg, i)
+		} else if Config.Type == "secret phrase" {
+			go threadWithPhrase(ctx, &wg, i)
+		}
 		wg.Add(1)
 	}
 
-	//go func() {
-	//
-	//}()
+	log.Println("Running...  Press Ctrl+C to stop")
+	log.Println("Result will display here and save to", Config.Output)
 
-	//wg.Wait()
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
 

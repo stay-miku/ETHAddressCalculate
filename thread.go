@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"regexp"
 	"sync"
@@ -19,23 +18,54 @@ func getReg() []*regexp.Regexp {
 	return regs
 }
 
-func calculate(regs []*regexp.Regexp) {
-	pri, add := GenWallet()
+func calculateKey(regs []*regexp.Regexp) {
+	pri, add := GenKeyWallet()
 	//log.Println("add", add)
 	for _, r := range regs {
 		//log.Println("add", add, "reg", r)
 		if r.MatchString(add) {
-			log.Println("Find: ", add, "reg: ", r)
+			log.Println("Find: ", add)
 			err := writeResult(pri, add)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 			break
 		}
 	}
 }
 
-func thread(ctx context.Context, wg *sync.WaitGroup, id int) {
+func calculatePhrase(regs []*regexp.Regexp, len int) {
+	phrase, add := GenPhraseWallet(len)
+	for _, r := range regs {
+		if r.MatchString(add) {
+			log.Println("Find: ", add)
+			err := writeResult(phrase, add)
+			if err != nil {
+				log.Println(err)
+			}
+			break
+		}
+	}
+}
+
+func threadWithPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
+	defer wg.Done()
+	var i uint64 = 0
+	length := Config.Length * 11 * 32 / 33
+	regs := getReg()
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Thread ", id, " exited, calculate: ", i)
+			return
+		default:
+			i++
+			calculatePhrase(regs, length)
+		}
+	}
+}
+
+func threadWithKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
 	var i uint64 = 0
 	regs := getReg()
@@ -46,7 +76,7 @@ func thread(ctx context.Context, wg *sync.WaitGroup, id int) {
 			return
 		default:
 			i++
-			calculate(regs)
+			calculateKey(regs)
 		}
 	}
 }

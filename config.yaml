@@ -1,8 +1,12 @@
 # 进程数
 thread: 8
 
+# 助记词 secret phrase    私钥 private key
+type: secret phrase
+len: 12 # 24  助记词长度
+
 # 运行时间,-1为无限
-run_times: 1800
+run_times: 600
 
 # 正则匹配
 reg:
