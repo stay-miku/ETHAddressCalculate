@@ -22,7 +22,6 @@ func calculateETHKey(regs []*regexp.Regexp) {
 	pri, add := GenKeyETHWallet()
 	//log.Println("add", add)
 	for _, r := range regs {
-		//log.Println("add", add, "reg", r)
 		if r.MatchString(add) {
 			log.Println("Find: ", add)
 			err := writeResult(pri, add)
@@ -50,6 +49,7 @@ func calculateETHPhrase(regs []*regexp.Regexp, len int) {
 
 func threadWithETHPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
+	log.Println("ETH Phrase Thread", id, "started")
 	var i uint64 = 0
 	length := Config.Length * 11 * 32 / 33
 	regs := getReg()
@@ -67,6 +67,7 @@ func threadWithETHPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 
 func threadWithETHKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
+	log.Println("ETH Key Thread", id, "started")
 	var i uint64 = 0
 	regs := getReg()
 	for {
@@ -111,6 +112,7 @@ func calculateTronPhrase(regs []*regexp.Regexp, len int) {
 
 func threadWithTronPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
+	log.Println("Tron Phrase Thread", id, "started")
 	var i uint64 = 0
 	length := Config.Length * 11 * 32 / 33
 	regs := getReg()
@@ -128,6 +130,7 @@ func threadWithTronPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 
 func threadWithTronKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
+	log.Println("Tron Key Thread", id, "started")
 	var i uint64 = 0
 	regs := getReg()
 	for {

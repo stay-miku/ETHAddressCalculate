@@ -6,13 +6,15 @@ import (
 )
 
 type config struct {
-	Thread  int      `yaml:"thread"`
-	RunTime int      `yaml:"run_times"`
-	Reg     []string `yaml:"reg"`
-	Output  string   `yaml:"output"`
-	Type    string   `yaml:"type"`
-	Length  int      `yaml:"len"`
-	Chain   string   `yaml:"chain"`
+	GoThread         int      `yaml:"go-thread"`
+	ETHPhraseThread  int      `yaml:"eth-phrase-thread"`
+	ETHKeyThread     int      `yaml:"eth-key-thread"`
+	TRONPhraseThread int      `yaml:"tron-phrase-thread"`
+	TRONKeyThread    int      `yaml:"tron-key-thread"`
+	RunTime          int      `yaml:"run-times"`
+	Reg              []string `yaml:"reg"`
+	Output           string   `yaml:"output"`
+	Length           int      `yaml:"len"`
 }
 
 var Config config

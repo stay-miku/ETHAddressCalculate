@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime"
 	"sync"
 	"syscall"
 	"time"
@@ -12,11 +13,13 @@ import (
 
 func main() {
 	log.Println("Start")
-	log.Println("Thread number: ", Config.Thread)
+	log.Println("Max Go Thread: ", Config.GoThread)
+	log.Println("ETH Phrase Thread: ", Config.ETHPhraseThread)
+	log.Println("ETH Key Thread: ", Config.ETHKeyThread)
+	log.Println("TRON Phrase Thread: ", Config.TRONPhraseThread)
+	log.Println("TRON Key Thread: ", Config.TRONKeyThread)
 	log.Println("Run time: ", Config.RunTime)
 	log.Println("Output file: ", Config.Output)
-	log.Println("Chain: ", Config.Chain)
-	log.Println("Type: ", Config.Type)
 	log.Println("Length: ", Config.Length)
 	log.Println("Reg:")
 	for _, r := range Config.Reg {
@@ -28,9 +31,6 @@ func main() {
 		panic(err)
 	}
 
-	if Config.Thread < 1 {
-		panic("Invalid thread number")
-	}
 	var ctx context.Context
 	var cancel context.CancelFunc
 	if Config.RunTime < 0 {
@@ -39,30 +39,35 @@ func main() {
 		ctx, cancel = context.WithTimeout(context.Background(), time.Duration(Config.RunTime)*time.Second)
 	}
 
-	var wg sync.WaitGroup
-	for i := 0; i < Config.Thread; i++ {
-		if Config.Chain == "eth" {
-			if Config.Type == "private key" {
-				go threadWithETHKey(ctx, &wg, i)
-			} else if Config.Type == "secret phrase" {
-				go threadWithETHPhrase(ctx, &wg, i)
-			} else {
-				panic("Invalid type")
-			}
-		} else if Config.Chain == "tron" {
-			if Config.Type == "private key" {
-				go threadWithTronKey(ctx, &wg, i)
-			} else if Config.Type == "secret phrase" {
-				go threadWithTronPhrase(ctx, &wg, i)
-			} else {
-				panic("Invalid type")
-			}
-		} else {
-			panic("Invalid chain")
-		}
-		wg.Add(1)
+	// set go thread
+	if Config.GoThread > 0 {
+		log.Println("Set go thread to", Config.GoThread)
+		runtime.GOMAXPROCS(Config.GoThread)
 	}
 
+	var wg sync.WaitGroup
+	i := 0
+	for j := 0; j < Config.ETHPhraseThread; j++ {
+		go threadWithETHPhrase(ctx, &wg, i)
+		i++
+		wg.Add(1)
+	}
+	for j := 0; j < Config.ETHKeyThread; j++ {
+		go threadWithETHKey(ctx, &wg, i)
+		i++
+		wg.Add(1)
+	}
+	for j := 0; j < Config.TRONPhraseThread; j++ {
+		go threadWithTronPhrase(ctx, &wg, i)
+		i++
+		wg.Add(1)
+	}
+	for j := 0; j < Config.TRONKeyThread; j++ {
+		go threadWithTronKey(ctx, &wg, i)
+		i++
+		wg.Add(1)
+	}
+	time.Sleep(1 * time.Second)
 	log.Println("Running...  Press Ctrl+C to stop")
 	log.Println("Result will display here and save to", Config.Output)
 
