@@ -23,7 +23,7 @@ func calculateETHKey(regs []*regexp.Regexp) {
 	//log.Println("add", add)
 	for _, r := range regs {
 		if r.MatchString(add) {
-			log.Println("Find: ", add)
+			log.Println("Find ETH Key: ", add)
 			err := writeResult(pri, add)
 			if err != nil {
 				log.Println(err)
@@ -37,7 +37,7 @@ func calculateETHPhrase(regs []*regexp.Regexp, len int) {
 	phrase, add := GenPhraseETHWallet(len)
 	for _, r := range regs {
 		if r.MatchString(add) {
-			log.Println("Find: ", add)
+			log.Println("Find ETH Phrase: ", add)
 			err := writeResult(phrase, add)
 			if err != nil {
 				log.Println(err)
@@ -56,7 +56,7 @@ func threadWithETHPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("Thread ", id, " exited, calculate: ", i)
+			log.Println("ETH Phrase Thread ", id, " exited, calculate: ", i)
 			return
 		default:
 			i++
@@ -73,7 +73,7 @@ func threadWithETHKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("Thread ", id, " exited, calculate: ", i)
+			log.Println("ETH Key Thread ", id, " exited, calculate: ", i)
 			return
 		default:
 			i++
@@ -86,7 +86,7 @@ func calculateTronKey(regs []*regexp.Regexp) {
 	pri, add := GenKeyTronWallet()
 	for _, r := range regs {
 		if r.MatchString(add) {
-			log.Println("Find: ", add)
+			log.Println("Find Tron Key: ", add)
 			err := writeResult(pri, add)
 			if err != nil {
 				log.Println(err)
@@ -100,7 +100,7 @@ func calculateTronPhrase(regs []*regexp.Regexp, len int) {
 	phrase, add := GenPhraseTronWallet(len)
 	for _, r := range regs {
 		if r.MatchString(add) {
-			log.Println("Find: ", add)
+			log.Println("Find Tron Phrase: ", add)
 			err := writeResult(phrase, add)
 			if err != nil {
 				log.Println(err)
@@ -119,7 +119,7 @@ func threadWithTronPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("Thread ", id, " exited, calculate: ", i)
+			log.Println("Tron Phrase Thread ", id, " exited, calculate: ", i)
 			return
 		default:
 			i++
@@ -136,7 +136,7 @@ func threadWithTronKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("Thread ", id, " exited, calculate: ", i)
+			log.Println("Tron Key Thread ", id, " exited, calculate: ", i)
 			return
 		default:
 			i++
