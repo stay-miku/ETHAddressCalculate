@@ -9,13 +9,9 @@ var file *os.File
 var outputMutex sync.Mutex
 
 func initOutput() error {
-	if _, err := os.Stat(Config.Output); os.IsExist(err) {
-		file, err = os.OpenFile(Config.Output, os.O_APPEND|os.O_WRONLY, 0644)
-		return err
-	} else {
-		file, err = os.OpenFile(Config.Output, os.O_CREATE|os.O_WRONLY, 0644)
-		return err
-	}
+	var err error
+	file, err = os.OpenFile("result.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	return err
 }
 
 func writeOutput(data string) error {
