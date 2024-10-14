@@ -1,6 +1,8 @@
 # 进程数
 thread: 8
 
+chain: eth # tron
+
 # 助记词 secret phrase    私钥 private key
 type: secret phrase
 len: 12 # 24  助记词长度

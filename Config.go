@@ -12,6 +12,7 @@ type config struct {
 	Output  string   `yaml:"output"`
 	Type    string   `yaml:"type"`
 	Length  int      `yaml:"len"`
+	Chain   string   `yaml:"chain"`
 }
 
 var Config config

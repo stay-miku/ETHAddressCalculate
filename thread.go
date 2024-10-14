@@ -18,8 +18,8 @@ func getReg() []*regexp.Regexp {
 	return regs
 }
 
-func calculateKey(regs []*regexp.Regexp) {
-	pri, add := GenKeyWallet()
+func calculateETHKey(regs []*regexp.Regexp) {
+	pri, add := GenKeyETHWallet()
 	//log.Println("add", add)
 	for _, r := range regs {
 		//log.Println("add", add, "reg", r)
@@ -34,8 +34,8 @@ func calculateKey(regs []*regexp.Regexp) {
 	}
 }
 
-func calculatePhrase(regs []*regexp.Regexp, len int) {
-	phrase, add := GenPhraseWallet(len)
+func calculateETHPhrase(regs []*regexp.Regexp, len int) {
+	phrase, add := GenPhraseETHWallet(len)
 	for _, r := range regs {
 		if r.MatchString(add) {
 			log.Println("Find: ", add)
@@ -48,7 +48,7 @@ func calculatePhrase(regs []*regexp.Regexp, len int) {
 	}
 }
 
-func threadWithPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
+func threadWithETHPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
 	var i uint64 = 0
 	length := Config.Length * 11 * 32 / 33
@@ -60,12 +60,12 @@ func threadWithPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 			return
 		default:
 			i++
-			calculatePhrase(regs, length)
+			calculateETHPhrase(regs, length)
 		}
 	}
 }
 
-func threadWithKey(ctx context.Context, wg *sync.WaitGroup, id int) {
+func threadWithETHKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
 	var i uint64 = 0
 	regs := getReg()
@@ -76,7 +76,68 @@ func threadWithKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 			return
 		default:
 			i++
-			calculateKey(regs)
+			calculateETHKey(regs)
+		}
+	}
+}
+
+func calculateTronKey(regs []*regexp.Regexp) {
+	pri, add := GenKeyTronWallet()
+	for _, r := range regs {
+		if r.MatchString(add) {
+			log.Println("Find: ", add)
+			err := writeResult(pri, add)
+			if err != nil {
+				log.Println(err)
+			}
+			break
+		}
+	}
+}
+
+func calculateTronPhrase(regs []*regexp.Regexp, len int) {
+	phrase, add := GenPhraseTronWallet(len)
+	for _, r := range regs {
+		if r.MatchString(add) {
+			log.Println("Find: ", add)
+			err := writeResult(phrase, add)
+			if err != nil {
+				log.Println(err)
+			}
+			break
+		}
+	}
+}
+
+func threadWithTronPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
+	defer wg.Done()
+	var i uint64 = 0
+	length := Config.Length * 11 * 32 / 33
+	regs := getReg()
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Thread ", id, " exited, calculate: ", i)
+			return
+		default:
+			i++
+			calculateTronPhrase(regs, length)
+		}
+	}
+}
+
+func threadWithTronKey(ctx context.Context, wg *sync.WaitGroup, id int) {
+	defer wg.Done()
+	var i uint64 = 0
+	regs := getReg()
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Thread ", id, " exited, calculate: ", i)
+			return
+		default:
+			i++
+			calculateTronKey(regs)
 		}
 	}
 }

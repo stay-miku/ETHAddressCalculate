@@ -15,6 +15,7 @@ func main() {
 	log.Println("Thread number: ", Config.Thread)
 	log.Println("Run time: ", Config.RunTime)
 	log.Println("Output file: ", Config.Output)
+	log.Println("Chain: ", Config.Chain)
 	log.Println("Type: ", Config.Type)
 	log.Println("Length: ", Config.Length)
 	log.Println("Reg:")
@@ -40,10 +41,24 @@ func main() {
 
 	var wg sync.WaitGroup
 	for i := 0; i < Config.Thread; i++ {
-		if Config.Type == "private key" {
-			go threadWithKey(ctx, &wg, i)
-		} else if Config.Type == "secret phrase" {
-			go threadWithPhrase(ctx, &wg, i)
+		if Config.Chain == "eth" {
+			if Config.Type == "private key" {
+				go threadWithETHKey(ctx, &wg, i)
+			} else if Config.Type == "secret phrase" {
+				go threadWithETHPhrase(ctx, &wg, i)
+			} else {
+				panic("Invalid type")
+			}
+		} else if Config.Chain == "tron" {
+			if Config.Type == "private key" {
+				go threadWithTronKey(ctx, &wg, i)
+			} else if Config.Type == "secret phrase" {
+				go threadWithTronPhrase(ctx, &wg, i)
+			} else {
+				panic("Invalid type")
+			}
+		} else {
+			panic("Invalid chain")
 		}
 		wg.Add(1)
 	}
