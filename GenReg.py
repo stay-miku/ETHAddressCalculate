@@ -6,10 +6,10 @@ eth_code = "1234567890abcdef"
 tron_code = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 
-len = 8
+len = 4
 
 
 print("eth:" + "|".join(["i{len}".replace("i", i).replace("len", str(len)) for i in eth_code]))
 print()
-print("tron" + "|".join(["i{len}".replace("i", i).replace("len", str(len)) for i in tron_code]))
+print("tron:" + "|".join(["i{len}".replace("i", i).replace("len", str(len)) for i in tron_code]))
 
