@@ -9,13 +9,24 @@ import (
 
 //var regs []*regexp.Regexp = make([]*regexp.Regexp, 10)
 
-func getReg() []*regexp.Regexp {
-	regs := make([]*regexp.Regexp, 0)
-	for _, r := range Config.Reg {
-		regs = append(regs, regexp.MustCompile(r))
+func getReg(type_ string) []*regexp.Regexp {
+	if type_ == "eth" {
+		regs := make([]*regexp.Regexp, 0)
+		for _, r := range Config.ETHReg {
+			regs = append(regs, regexp.MustCompile(r))
+		}
+		//log.Println("Regs: ", regs)
+		return regs
+	} else if type_ == "tron" {
+		regs := make([]*regexp.Regexp, 0)
+		for _, r := range Config.TronReg {
+			regs = append(regs, regexp.MustCompile(r))
+		}
+		//log.Println("Regs: ", regs)
+		return regs
+	} else {
+		panic("Invalid reg type")
 	}
-	//log.Println("Regs: ", regs)
-	return regs
 }
 
 func calculateETHKey(regs []*regexp.Regexp) {
@@ -52,7 +63,7 @@ func threadWithETHPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	log.Println("ETH Phrase Thread", id, "started")
 	var i uint64 = 0
 	length := Config.Length * 11 * 32 / 33
-	regs := getReg()
+	regs := getReg("eth")
 	for {
 		select {
 		case <-ctx.Done():
@@ -69,7 +80,7 @@ func threadWithETHKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
 	log.Println("ETH Key Thread", id, "started")
 	var i uint64 = 0
-	regs := getReg()
+	regs := getReg("eth")
 	for {
 		select {
 		case <-ctx.Done():
@@ -115,7 +126,7 @@ func threadWithTronPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	log.Println("Tron Phrase Thread", id, "started")
 	var i uint64 = 0
 	length := Config.Length * 11 * 32 / 33
-	regs := getReg()
+	regs := getReg("tron")
 	for {
 		select {
 		case <-ctx.Done():
@@ -132,7 +143,7 @@ func threadWithTronKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	defer wg.Done()
 	log.Println("Tron Key Thread", id, "started")
 	var i uint64 = 0
-	regs := getReg()
+	regs := getReg("tron")
 	for {
 		select {
 		case <-ctx.Done():

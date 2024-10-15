@@ -12,7 +12,8 @@ type config struct {
 	TRONPhraseThread int      `yaml:"tron-phrase-thread"`
 	TRONKeyThread    int      `yaml:"tron-key-thread"`
 	RunTime          int      `yaml:"run-times"`
-	Reg              []string `yaml:"reg"`
+	ETHReg           []string `yaml:"eth-reg"`
+	TronReg          []string `yaml:"tron-reg"`
 	Output           string   `yaml:"output"`
 	Length           int      `yaml:"len"`
 }

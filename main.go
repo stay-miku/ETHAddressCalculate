@@ -21,8 +21,14 @@ func main() {
 	log.Println("Run time: ", Config.RunTime)
 	log.Println("Output file: ", Config.Output)
 	log.Println("Length: ", Config.Length)
-	log.Println("Reg:")
-	for _, r := range Config.Reg {
+	log.Println("----------------------")
+	log.Println("ETH Reg:")
+	for _, r := range Config.ETHReg {
+		log.Println(r)
+	}
+	log.Println("----------------------")
+	log.Println("TRON Reg:")
+	for _, r := range Config.TronReg {
 		log.Println(r)
 	}
 	log.Println("----------------------")
