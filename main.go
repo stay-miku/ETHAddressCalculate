@@ -26,11 +26,17 @@ func main() {
 	for _, r := range Config.ETHReg {
 		log.Println(r)
 	}
+	log.Println("ETH Prefix: ", Config.ETHPrefix)
+	log.Println("ETH Suffix: ", Config.ETHSuffix)
+	log.Println("ETH PS: ", Config.ETHPS)
 	log.Println("----------------------")
 	log.Println("TRON Reg:")
 	for _, r := range Config.TronReg {
 		log.Println(r)
 	}
+	log.Println("TRON Prefix: ", Config.TronPrefix)
+	log.Println("TRON Suffix: ", Config.TronSuffix)
+	log.Println("TRON PS: ", Config.TronPS)
 	log.Println("----------------------")
 	err := initOutput()
 	if err != nil {

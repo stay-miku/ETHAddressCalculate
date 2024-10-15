@@ -1,10 +1,9 @@
 package main
 
 import (
-	"crypto/sha256"
+	"ETHAddress/base58"
 	"encoding/hex"
 	"github.com/btcsuite/btcd/btcec/v2"
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/tyler-smith/go-bip32"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/sha3"
@@ -23,7 +22,7 @@ func GenKeyPair() ([]byte, []byte) {
 	return privateKey.Serialize(), publicKey.SerializeUncompressed()
 }
 
-func GenETHAddress(publicKey []byte) string {
+func GenETHAddress(publicKey []byte) []byte {
 	if len(publicKey) != 64 {
 		panic("Invalid public key length: " + string(rune(len(publicKey))))
 	}
@@ -32,10 +31,10 @@ func GenETHAddress(publicKey []byte) string {
 	hash.Write(publicKey)
 	hashed := hash.Sum(nil)
 
-	return hex.EncodeToString(hashed[12:])
+	return hashed[12:]
 }
 
-func GenTronAddress(publicKey []byte) string {
+func GenTronAddress(publicKey []byte) []byte {
 	if len(publicKey) != 64 {
 		panic("Invalid public key length: " + strconv.Itoa(len(publicKey)))
 	}
@@ -44,21 +43,20 @@ func GenTronAddress(publicKey []byte) string {
 	hash.Write(publicKey)
 	hashed := hash.Sum(nil)
 
-	midstAddress := append([]byte{0x41}, hashed[12:]...)
-	midst := sha256.Sum256(midstAddress)
-	captcha := sha256.Sum256(midst[:])
-	byteAddress := append(midstAddress, captcha[:4]...)
+	//midst := sha256.Sum256(midstAddress)
+	//captcha := sha256.Sum256(midst[:])
+	//byteAddress := append(midstAddress, captcha[:4]...)
 
-	return base58.Encode(byteAddress)
+	return base58.CheckEncode(hashed[12:], 0x41)
 }
 
-func GenKeyETHWallet() (string, string) {
+func GenKeyETHWallet() (string, []byte) {
 	pri, pub := GenKeyPair()
 
 	return hex.EncodeToString(pri), GenETHAddress(pub[1:])
 }
 
-func GenKeyTronWallet() (string, string) {
+func GenKeyTronWallet() (string, []byte) {
 	pri, pub := GenKeyPair()
 
 	return hex.EncodeToString(pri), GenTronAddress(pub[1:])
@@ -110,7 +108,7 @@ func KeyPairFromPhrase(phrase string, path []uint32) ([]byte, []byte) {
 	return privateKey.Serialize(), publicKey.SerializeUncompressed()
 }
 
-func GenPhraseETHWallet(len int) (string, string) {
+func GenPhraseETHWallet(len int) (string, []byte) {
 	_, phrase, err := GenSecretPhrase(len)
 	if err != nil {
 		panic(err)
@@ -122,7 +120,7 @@ func GenPhraseETHWallet(len int) (string, string) {
 	return phrase, add
 }
 
-func GenPhraseTronWallet(len int) (string, string) {
+func GenPhraseTronWallet(len int) (string, []byte) {
 	_, phrase, err := GenSecretPhrase(len)
 	if err != nil {
 		panic(err)

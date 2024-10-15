@@ -14,6 +14,12 @@ type config struct {
 	RunTime          int      `yaml:"run-times"`
 	ETHReg           []string `yaml:"eth-reg"`
 	TronReg          []string `yaml:"tron-reg"`
+	ETHSuffix        int      `yaml:"eth-suffix"`
+	TronSuffix       int      `yaml:"tron-suffix"`
+	ETHPrefix        int      `yaml:"eth-prefix"`
+	TronPrefix       int      `yaml:"tron-prefix"`
+	ETHPS            []int    `yaml:"eth-p-s"`
+	TronPS           []int    `yaml:"tron-p-s"`
 	Output           string   `yaml:"output"`
 	Length           int      `yaml:"len"`
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"log"
 	"regexp"
 	"sync"
@@ -29,31 +30,68 @@ func getReg(type_ string) []*regexp.Regexp {
 	}
 }
 
-func calculateETHKey(regs []*regexp.Regexp) {
+func GetMatcher(type_ string) []Matcher {
+	if type_ == "eth" {
+		matchers := make([]Matcher, 2)
+		matchers[0] = NewETHMatcher(Config.ETHPrefix, Config.ETHSuffix)
+		matchers[1] = NewETHMatcher(Config.ETHPS[0], Config.ETHPS[1])
+		return matchers
+	} else if type_ == "tron" {
+		matchers := make([]Matcher, 2)
+		matchers[0] = NewTronMatcher(Config.TronPrefix, Config.TronSuffix)
+		matchers[1] = NewTronMatcher(Config.TronPS[0], Config.TronPS[1])
+		return matchers
+	} else {
+		panic("Invalid reg type")
+	}
+}
+
+func calculateETHKey(regs []*regexp.Regexp, matcher []Matcher) {
 	pri, add := GenKeyETHWallet()
-	//log.Println("add", add)
+	if matcher[0].MatchOne(add) || matcher[1].MatchAll(add) {
+		addStr := hex.EncodeToString(add)
+		log.Println("Find ETH Key: ", addStr)
+		err := writeResult(pri, addStr)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
+	addStr := hex.EncodeToString(add)
 	for _, r := range regs {
-		if r.MatchString(add) {
-			log.Println("Find ETH Key: ", add)
-			err := writeResult(pri, add)
+		if r.MatchString(addStr) {
+			log.Println("Find ETH Key: ", addStr)
+			err := writeResult(pri, addStr)
 			if err != nil {
 				log.Println(err)
 			}
-			break
+			return
 		}
 	}
 }
 
-func calculateETHPhrase(regs []*regexp.Regexp, len int) {
+func calculateETHPhrase(regs []*regexp.Regexp, matcher []Matcher, len int) {
 	phrase, add := GenPhraseETHWallet(len)
+	if matcher[0].MatchOne(add) || matcher[1].MatchAll(add) {
+		addStr := hex.EncodeToString(add)
+		log.Println("Find ETH Phrase: ", addStr)
+		err := writeResult(phrase, addStr)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
+	addStr := hex.EncodeToString(add)
 	for _, r := range regs {
-		if r.MatchString(add) {
-			log.Println("Find ETH Phrase: ", add)
-			err := writeResult(phrase, add)
+		if r.MatchString(addStr) {
+			log.Println("Find ETH Phrase: ", addStr)
+			err := writeResult(phrase, addStr)
 			if err != nil {
 				log.Println(err)
 			}
-			break
+			return
 		}
 	}
 }
@@ -64,6 +102,7 @@ func threadWithETHPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	var i uint64 = 0
 	length := Config.Length * 11 * 32 / 33
 	regs := getReg("eth")
+	matcher := GetMatcher("eth")
 	for {
 		select {
 		case <-ctx.Done():
@@ -71,7 +110,7 @@ func threadWithETHPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 			return
 		default:
 			i++
-			calculateETHPhrase(regs, length)
+			calculateETHPhrase(regs, matcher, length)
 		}
 	}
 }
@@ -81,6 +120,7 @@ func threadWithETHKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	log.Println("ETH Key Thread", id, "started")
 	var i uint64 = 0
 	regs := getReg("eth")
+	matcher := GetMatcher("eth")
 	for {
 		select {
 		case <-ctx.Done():
@@ -88,35 +128,57 @@ func threadWithETHKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 			return
 		default:
 			i++
-			calculateETHKey(regs)
+			calculateETHKey(regs, matcher)
 		}
 	}
 }
 
-func calculateTronKey(regs []*regexp.Regexp) {
+func calculateTronKey(regs []*regexp.Regexp, matcher []Matcher) {
 	pri, add := GenKeyTronWallet()
+	if matcher[0].MatchOne(add) || matcher[1].MatchAll(add) {
+		addStr := string(add)
+		log.Println("Find Tron Key: ", addStr)
+		err := writeResult(pri, addStr)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
+	addStr := string(add)
 	for _, r := range regs {
-		if r.MatchString(add) {
-			log.Println("Find Tron Key: ", add)
-			err := writeResult(pri, add)
+		if r.MatchString(addStr) {
+			log.Println("Find Tron Key: ", addStr)
+			err := writeResult(pri, addStr)
 			if err != nil {
 				log.Println(err)
 			}
-			break
+			return
 		}
 	}
 }
 
-func calculateTronPhrase(regs []*regexp.Regexp, len int) {
+func calculateTronPhrase(regs []*regexp.Regexp, matcher []Matcher, len int) {
 	phrase, add := GenPhraseTronWallet(len)
+	if matcher[0].MatchOne(add) || matcher[1].MatchAll(add) {
+		addStr := string(add)
+		log.Println("Find Tron Phrase: ", addStr)
+		err := writeResult(phrase, addStr)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
+	addStr := string(add)
 	for _, r := range regs {
-		if r.MatchString(add) {
-			log.Println("Find Tron Phrase: ", add)
-			err := writeResult(phrase, add)
+		if r.MatchString(addStr) {
+			log.Println("Find Tron Phrase: ", addStr)
+			err := writeResult(phrase, addStr)
 			if err != nil {
 				log.Println(err)
 			}
-			break
+			return
 		}
 	}
 }
@@ -127,6 +189,7 @@ func threadWithTronPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 	var i uint64 = 0
 	length := Config.Length * 11 * 32 / 33
 	regs := getReg("tron")
+	matcher := GetMatcher("tron")
 	for {
 		select {
 		case <-ctx.Done():
@@ -134,7 +197,7 @@ func threadWithTronPhrase(ctx context.Context, wg *sync.WaitGroup, id int) {
 			return
 		default:
 			i++
-			calculateTronPhrase(regs, length)
+			calculateTronPhrase(regs, matcher, length)
 		}
 	}
 }
@@ -144,6 +207,7 @@ func threadWithTronKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 	log.Println("Tron Key Thread", id, "started")
 	var i uint64 = 0
 	regs := getReg("tron")
+	matcher := GetMatcher("tron")
 	for {
 		select {
 		case <-ctx.Done():
@@ -151,7 +215,7 @@ func threadWithTronKey(ctx context.Context, wg *sync.WaitGroup, id int) {
 			return
 		default:
 			i++
-			calculateTronKey(regs)
+			calculateTronKey(regs, matcher)
 		}
 	}
 }
