@@ -1,16 +1,16 @@
 # go线程数  小于0为默认
-go-thread: 1
+go-thread: 16
 
 # 助记词 secret phrase    私钥 private key
 eth-phrase-thread: 0
-eth-key-thread: 1
+eth-key-thread: 0
 tron-phrase-thread: 0
-tron-key-thread: 0
+tron-key-thread: 16
 
 len: 12 # 24  助记词长度
 
 # 运行时间,-1为无限
-run-times: 60
+run-times: -1
 
 # 地址同号前缀和同号后缀长度设置，避免使用正则表达式匹配
 eth-prefix: 8
@@ -19,7 +19,7 @@ eth-p-s:  # 同时满足前缀和后缀长度
   - 4
   - 6
 
-tron-prefix: 6
+tron-prefix: 7
 tron-suffix: 6
 tron-p-s:
   - 4
@@ -29,7 +29,7 @@ tron-p-s:
 eth-reg:
   - 395201314$
   - faceb00c$
-  - 3939393939$
+  - 39393939$
   - ^393939.*393939$
   - (01234567|12345678|23456789|3456789a|456789ab|56789abc|6789abcd|789abcde|89abcdef|fedcba98|edcba987|dcba9876|cba98765|ba987654|a9876543|98765432|87654321|76543210)$
   - 0123456789abcdef|fedcba9876543210
@@ -40,9 +40,12 @@ eth-reg:
 
 # tron address start with T
 tron-reg:
-  - 39393939$
+  - (miku|Miku|Suki|suki){2}$
+  - 39(Miku|miku)$
+  - (Miku|miku)39$
+  - ^T(miku|Miku|Suki|suki|3939).*(miku|Miku|Suki|suki|3939)$
+  - 393939$
   - 39520$
-  - $3939.*3939$
   - 114514$
   - 1919810$
   - "1145141919810"
